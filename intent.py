@@ -6,11 +6,12 @@ import time
 import datetime
 import streamlit as st
 
-load_dotenv()
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Access OpenAI API key from Streamlit secrets
+openai.api_key = st.secrets["OPENAI_API_KEY"]["value"]
 
 if openai.api_key is None:
     raise ValueError("API key not found. Please set your OPENAI_API_KEY.")
+
 
 def label_cluster_with_openai_intent(phrases):
     prompt = (
@@ -33,12 +34,17 @@ def label_cluster_with_openai_intent(phrases):
         print(f"🔍 Prompting OpenAI with {len(phrases)} keywords...")
         response = openai.ChatCompletion.create(
             model="gpt-4",  # Or "gpt-3.5-turbo", depending on your choice
-            messages=[{"role": "system", "content": "You are an assistant that helps with user intent classification."},
-                      {"role": "user", "content": prompt}],
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are an assistant that helps with user intent classification.",
+                },
+                {"role": "user", "content": prompt},
+            ],
             max_tokens=150,
             temperature=0,
         )
-        result = response['choices'][0]['message']['content'].strip()
+        result = response["choices"][0]["message"]["content"].strip()
         print("📥 OpenAI response:\n", result)
 
         # Extract description and intent type from the response
@@ -59,6 +65,7 @@ def label_cluster_with_openai_intent(phrases):
     except Exception as e:
         print("❌ OpenAI error:", e)
         return "Generic intent description", "Generic"
+
 
 def label_all_clusters(df, embeddings, centers):
     cluster_labels = {}
