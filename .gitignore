@@ -1,0 +1,4 @@
+# Ignore credentials and user login code
+.env
+add_users.py
+secrets.toml
