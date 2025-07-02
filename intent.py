@@ -33,7 +33,7 @@ def label_cluster_with_openai_intent(phrases):
     try:
         print(f"🔍 Prompting OpenAI with {len(phrases)} keywords...")
         response = openai.ChatCompletion.create(
-            model="gpt-4",  # Or "gpt-3.5-turbo", depending on your choice
+            model="chatgpt-4o-latest",  # Or "gpt-3.5-turbo", depending on your choice
             messages=[
                 {
                     "role": "system",
