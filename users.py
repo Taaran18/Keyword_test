@@ -1,21 +1,18 @@
 import streamlit as st
-import os
 import bcrypt
-from dotenv import load_dotenv
-import time
-
-load_dotenv()
 
 MAX_LOGIN_ATTEMPTS = 5
 
-
 def check_password(username, password):
-    env_key = f"{username.upper()}_HASH"
-    stored_hash = os.getenv(env_key)
+    """
+    Check the password by dynamically fetching the stored hash from secrets.
+    """
+    env_key = f"{username.upper()}_HASH"  # Fetch the corresponding user's hash key from secrets.
+    stored_hash = st.secrets.get(env_key)
+    
     if not stored_hash:
-        return False
-    return bcrypt.checkpw(password.encode("utf-8"), stored_hash.encode("utf-8"))
-
+        return False  # Return False if no hash is found in secrets.
+    return bcrypt.checkpw(password.encode("utf-8"), stored_hash["value"].encode("utf-8"))
 
 def login():
     if "login_attempts" not in st.session_state:
@@ -76,7 +73,6 @@ def login():
                 st.session_state["login_attempts"] += 1
                 remaining = MAX_LOGIN_ATTEMPTS - st.session_state["login_attempts"]
                 st.error(f"❌ Invalid credentials. {remaining} attempts left.")
-
 
 def logout():
     username = st.session_state.get("username", "User")
